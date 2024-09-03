@@ -1,0 +1,47 @@
+/** @description Result of select on table 'GHAS_ATEND_PACIENTE_T' */
+export interface IAttendancePatient {
+  CD_ESTABELECIMENTO: number
+  NM_ESTABELECIMENTO: string
+  NR_ATENDIMENTO: number
+  IE_TIPO_ATENDIMENTO: number
+  TIPO_ATENDIMENTO: string
+  NM_PACIENTE: string
+  DT_NASCIMENTO: Date
+  IE_SEXO_PAC: string
+  CD_SETOR_ATENDIMENTO: number
+  DS_SETOR_ATENDIMENTO: string
+  CD_UNIDADE_BASICA: string
+  NM_MEDICO: string
+  NR_CRM: number
+  IE_SEXO_MED: string
+  CD_ESPECIALIDADE: number
+  DS_ESPECIALIDADE: string
+  IE_LADO: string
+  QT_TEMP: number
+  QT_TEMP_UNID_MED: string
+  QT_PA_SISTOLICA: number
+  QT_PA_SISTOLICA_UNID_MED: string
+  QT_PA_DIASISTOLICA: number
+  QT_PA_DIASISTOLICA_UNID_MED: string
+  QT_SATURACAO_O2: number
+  QT_SAT_O2_UNID_MED: string
+  QT_GLICEMIA_CAPILAR: number
+  QT_GLICEMIA_CAPILAR_UNID_MED: string
+  QT_PESO: number
+  QT_PESO_UNID_MED: string
+  QT_ALTURA_CM: number
+  QT_ALTURA_CM_UNID_MED: string
+  QT_CIRCUNF_PANTURRILHA: number
+  QT_CIRCUNF_PANT_UNID_MED: string
+  QT_CIRCUNF_BRACO: number
+  QT_CIRCUNF_BRACO_UNID_MED: string
+  QT_CIRCUNF_CINTURA: number
+  QT_CIRCUNF_CINTURA_UNID_MED: string
+  QT_IMC: number
+  QT_IMC_UNID_MED: string
+  ID_INTEGRACAO: number
+  IE_INTEGRADO: string
+  HOSTNAME: string
+  IP: string
+  SN_TELA: string
+}
