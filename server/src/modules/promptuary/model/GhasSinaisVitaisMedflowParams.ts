@@ -15,6 +15,7 @@ export class GhasSinaisVitaisMedflowParams {
   vl_circ_abdominal_p: string | null
   nr_prontuario_p: string | null
   ds_plandefinition_p: string | null
+  ds_senha_p: string | null
 
   constructor() {
     this.nr_atendimento_p = null
@@ -33,5 +34,6 @@ export class GhasSinaisVitaisMedflowParams {
     this.vl_circ_abdominal_p = null
     this.nr_prontuario_p = null
     this.ds_plandefinition_p = null
+    this.ds_senha_p = null
   }
 }

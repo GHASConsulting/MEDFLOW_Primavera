@@ -12,9 +12,19 @@ function findExameLab(recordType, fullResource) {
         else {
             return null;
         }
-        let caracter = ":";
-        arrParam.forEach(item => {
-            valores.push(`${item.text} ${caracter} ${Object.values(item.answer[0])}\n-`);
+        arrParam.forEach((item) => {
+            let caracter = ":";
+            let valorResp;
+            if (Object.values(item.answer[0]).toString() == "true") {
+                valorResp = "Sim";
+            }
+            else if (Object.values(item.answer[0]).toString() == "false") {
+                valorResp = "Não";
+            }
+            else {
+                valorResp = Object.values(item.answer[0]).toString();
+            }
+            valores.push(`${item.text} ${caracter} ${valorResp}\n-`);
         });
         return valores.toString().replaceAll('-,', '').replaceAll('-', '');
     }

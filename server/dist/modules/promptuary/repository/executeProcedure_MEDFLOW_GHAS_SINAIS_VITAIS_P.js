@@ -26,7 +26,8 @@ async function executeProcedure_MEDFLOW_GHAS_SINAIS_VITAIS_P(data) {
             '${data.vl_circ_cabeca_p}',
             '${data.vl_circ_abdominal_p}',
             '${data.nr_prontuario_p}',
-            '${data.ds_plandefinition_p}'
+            '${data.ds_plandefinition_p}',
+            '${data.ds_senha_p}'
         );
       END;
     `;

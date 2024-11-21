@@ -2,25 +2,35 @@ export function findMedicacoes_de_uso_comum (recordType : any, fullResource :any
     if(recordType === 'Q'){
       let arrParam :any = []
       let valores :any = [] 
-      //let arrParamNew :any = []
+      let arrParamNew :any = []
 
           if(fullResource.resource.resourceType === "QuestionnaireResponse"){
           arrParam = fullResource.resource.item.filter((item :any) => item.linkId.substring(0,'medicacoes_de_uso_comum'.length) ===  'medicacoes_de_uso_comum')
-          
+                    arrParam.forEach((item:any) => {
+                      let caracter = ":";
+                      let valorResp
+                      arrParamNew = item?.answer?.length ?? null
+                        if(arrParamNew != null){
+                          valores.push(`--> ${item.text} \n`)
+                          for(const items of item.answer){
+                            if(Object.values(items).toString() == "true"){valorResp ="Sim"} 
+                                      else if(Object.values(items).toString() == "false") {valorResp ="Não"} 
+                                      else{valorResp = Object.values(items).toString()}
+                                    
+                            valores.push(`- ${valorResp}\n`);
+                          }
+                        }
+                      }
+                    );
+                
+                return valores.toString().replaceAll(',-','-')
 
-          }else{
+            }else{
               return null
+            }
+            
+
+            
           }
-          let caracter= ":"
-          arrParam.forEach( item => { 
-            valores.push(`${item.text} ${caracter} ${Object.values(item.answer[0]) }\n-`)
-    }) 
-          
-          
-          return valores.toString().replaceAll('-,','').replaceAll('-','')
-        }else{
-            return null
-        }
-        
         
 }

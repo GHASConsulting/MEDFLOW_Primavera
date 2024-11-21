@@ -2,27 +2,36 @@ export function findSinais_vitais(recordType : any, fullResource :any):any {
     if(recordType === 'Q'){
   let arrParam :any = []
   let valores :any = [] 
-  //let arrParamNew :any = []
+  let arrParamNew :any = []
 
       if(fullResource.resource.resourceType === "QuestionnaireResponse"){
       arrParam = fullResource.resource.item.filter((item :any) => item.linkId.substring(0,'sinais_vitais'.length) ===  'sinais_vitais')
-      
+                        arrParam.forEach((item:any) => {
+                            let caracter = ":";
+                            let valorResp
+                            arrParamNew = item?.answer?.length ?? null
+                            if(arrParamNew != null){
+                                valores.push(`--> ${item.text} \n`)
+                                for(const items of item.answer){
+                                if(Object.values(items).toString() == "true"){valorResp ="Sim"} 
+                                            else if(Object.values(items).toString() == "false") {valorResp ="Não"} 
+                                            else{valorResp = Object.values(items).toString()}
+                                        
+                                valores.push(`- ${valorResp}\n`);
+                                }
+                            }
+                            }
+                        );
+                    
+                    return valores.toString().replaceAll(',-','-')
 
-      }else{
-          return null
-      }
-      let caracter= ":"
-      arrParam.forEach( item => { 
-        valores.push(`${item.text} ${caracter} ${Object.values(item.answer[0]) }\n-`)
-}) 
-      
-      
-      return valores.toString().replaceAll('-,','').replaceAll('-','')
-    }else{
-        return null
-    }
-    
-    
+                    }else{
+                    return null
+                    }
+
+
+
+                    }
 }
 
 
@@ -47,6 +56,6 @@ export function findSinais_vitais_triagem(fullResource :any) {
     novoObjeto.temperatura = Object.values(newSinais.find((element :any) => element.linkId ===  'sinais_vitais.temperatura').answer[0]).toString()
     novoObjeto.sato2 = Object.values(newSinais.find((element :any) => element.linkId ===  'sinais_vitais.SATO2').answer[0]).toString()
     novoObjeto.fc = Object.values(newSinais.find((element :any) => element.linkId ===  'sinais_vitais.FC').answer[0]).toString()
-    novoObjeto.descResumoTriagem = resumoTriagem[0].resource.action[0].description.toString()
+    novoObjeto.descResumoTriagem = resumoTriagem[0]?.resource.action[0]?.description?.toString() ?? null
     return novoObjeto  
 } 

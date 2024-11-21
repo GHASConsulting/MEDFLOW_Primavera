@@ -81,7 +81,7 @@ export async function promptuary(app: FastifyInstance) {
         await makeRequest(protocolOnMediflowObjectRequest)
       ).data
 
-    
+    /** End-point que retorna numero de protuario */
       const protocolOnMediflowObjectRequestProntuario: AxiosRequestConfig = {
         method: 'POST',
         url: 'https://daktus-cdss-gateway-fb3207ecf9d6.herokuapp.com/api/v2/tasy/daktus/medical_record_viewer',
@@ -97,6 +97,30 @@ export async function promptuary(app: FastifyInstance) {
       ).data
       
       const numeroProntuario = medflowBundleProntuario.medical_record_id
+    
+
+
+    /** End-point que retorna numero de senha */ 
+    
+    const protocolOnMediflowObjectRequestSenha: AxiosRequestConfig = {
+      method: 'POST',
+      url: 'https://daktus-cdss-gateway-fb3207ecf9d6.herokuapp.com//api/v2/tasy/daktus/triage_token_viewer',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data:{"bundle_id": toGetBundleId}
+    }
+
+
+    const medflowBundleSenha: any = (
+      await makeRequest(protocolOnMediflowObjectRequestSenha)
+    ).data
+    
+    const numeroSenha = medflowBundleSenha.triage_token
+
+
+      console.log('Senha')
+      console.log(numeroSenha)
 
       console.log('Status Bundle')
       console.log(toGetStatus)
@@ -112,7 +136,7 @@ export async function promptuary(app: FastifyInstance) {
         validResourceTypes.includes(item.resource.resourceType),
       )
 
-      let index = 0
+      
       const doctorData = findDoctor(medflowBundle, resourcesToProcess)
       const attendanceData = findAttendance(medflowBundle)
       
@@ -127,7 +151,7 @@ export async function promptuary(app: FastifyInstance) {
         prdSinaisVitaisParams.vl_temperatura_p = sinaisVitaisTriagem.temperatura
         prdSinaisVitaisParams.vl_peso_p = null
         prdSinaisVitaisParams.vl_altura_p = null
-        prdSinaisVitaisParams.vl_freq_respiratoria_p = sinaisVitaisTriagem.fr
+        prdSinaisVitaisParams.vl_freq_respiratoria_p = sinaisVitaisTriagem.fr?.toString()
         prdSinaisVitaisParams.vl_freq_cardiaca_p = sinaisVitaisTriagem.fc
         prdSinaisVitaisParams.vl_pressao_sis_p = sinaisVitaisTriagem.pas
         prdSinaisVitaisParams.vl_pressao_dia_p = sinaisVitaisTriagem.pad
@@ -137,14 +161,20 @@ export async function promptuary(app: FastifyInstance) {
         prdSinaisVitaisParams.vl_circ_abdominal_p = null
         prdSinaisVitaisParams.nr_prontuario_p = numeroProntuario
         prdSinaisVitaisParams.ds_plandefinition_p = sinaisVitaisTriagem.descResumoTriagem
+        prdSinaisVitaisParams.ds_senha_p = numeroSenha 
 
         await executeProcedure_MEDFLOW_GHAS_SINAIS_VITAIS_P(prdSinaisVitaisParams) 
+        console.log(prdSinaisVitaisParams)
         console.log('(INF) Concluiu a execução Triagem!')
 
-      }else if ((toGetStatus == 'FINALIZADO' || toGetStatus == 'PAUSADO') && toGetTipoBundle != 'primavera_triagem') {
+      }
+
+
+      if ((toGetStatus == 'FINALIZADO' || toGetStatus == 'PAUSADO') && toGetTipoBundle != 'primavera_triagem') {
+
         const prdParams = new GhasPrescrMedflowPParams();
         let anamneseRes :any
-        
+        let index = 0
         for (const resource of resourcesToProcess) {
             const recordType = identifyRecordType(resource);
             const queixa = findQueixa(recordType, resource);
@@ -167,19 +197,19 @@ export async function promptuary(app: FastifyInstance) {
               ${exame_imagem} 
               ${exame_lab}`
 
-            // if (queixa){anamneseResumo.push(queixa)}else{null}
-            // if (hda){anamneseResumo.push(hda)}else{null}
-            // if (diagnostico){anamneseResumo.push(diagnostico)}else{null}
-            // if (hpp){anamneseResumo.push(hpp)}else{null}
-            // if (alergias){anamneseResumo.push(alergias)}else{null}
-            // if (medicacoes_de_uso_comum){anamneseResumo.push(medicacoes_de_uso_comum)}else{null}
-            // if (habitos){anamneseResumo.push(habitos)}else{null}
-            // if (antecedentes_pessoais){anamneseResumo.push(antecedentes_pessoais)}else{null}
-            // if (hfam){anamneseResumo.push(hfam)}else{null}
-            // if (sinais_vitais){anamneseResumo.push(sinais_vitais)}else{null}
-            // if (exame_fisico){anamneseResumo.push(exame_fisico)}else{null}
-            // if (exame_imagem){anamneseResumo.push(exame_imagem)}else{null}
-            // if (exame_lab){anamneseResumo.push(exame_lab)}else{null}
+            /* if (queixa){anamneseResumo.push(queixa)}else{null}
+            if (hda){anamneseResumo.push(hda)}else{null}
+            if (diagnostico){anamneseResumo.push(diagnostico)}else{null}
+            if (hpp){anamneseResumo.push(hpp)}else{null}
+            if (alergias){anamneseResumo.push(alergias)}else{null}
+            if (medicacoes_de_uso_comum){anamneseResumo.push(medicacoes_de_uso_comum)}else{null}
+            if (habitos){anamneseResumo.push(habitos)}else{null}
+            if (antecedentes_pessoais){anamneseResumo.push(antecedentes_pessoais)}else{null}
+            if (hfam){anamneseResumo.push(hfam)}else{null}
+            if (sinais_vitais){anamneseResumo.push(sinais_vitais)}else{null}
+            if (exame_fisico){anamneseResumo.push(exame_fisico)}else{null}
+            if (exame_imagem){anamneseResumo.push(exame_imagem)}else{null}
+            if (exame_lab){anamneseResumo.push(exame_lab)}else{null} */
         }
         prdParams.nr_atendimento_p = attendanceData[0].resource.identifier[0].value;
         prdParams.cd_medico_p = doctorData;
@@ -191,7 +221,7 @@ export async function promptuary(app: FastifyInstance) {
         }
         
         if (anamneseRes.length > 0) {
-            prdParams.ds_orientacao_p = anamneseRes.toString().replaceAll('null','').replaceAll(' ','').replaceAll('undefinednull','').replaceAll('undefined',''); //array.filter((item :any) => item.linkId.substring(0,3) ===  'hpp')
+            prdParams.ds_orientacao_p = anamneseRes.toString().replaceAll('null','').replaceAll('undefinednull','').replaceAll('undefined','').trim(); //array.filter((item :any) => item.linkId.substring(0,3) ===  'hpp')
         }
         else {
             null;
@@ -201,199 +231,186 @@ export async function promptuary(app: FastifyInstance) {
         index++;
         
         console.log('(INF) Concluiu a execução Anamnese!')
-        if(toGetStatus == 'FINALIZADO' ){
+      }
+
+      
+      if(toGetStatus == 'FINALIZADO'){
+          let index = 0
           for (const resource of resourcesToProcess) {
-            
-            const recordType = identifyRecordType(resource)
-            const procedureCode = findProcedureCode(resource, recordType)
-            const quantityProcedure = findQuantityProcedure(resource)
-            const side = findSide(resource)
-            const intervalCode = findIntervalCode(resource)
-            const isNecessary = findIsNecessary(resource)
-            const justification = findJustification(resource)
-            const materialCode = findMaterialCode(resource)
-            const materialDescription = findMaterialDescription(resource)
-            const materialInd = findMaterialInd(resource)
-            const applicationVia = findApplicationVia(resource)
-            const quantityDose = findQuantityDose(resource)
-            const unityCode = findMedidaUnityCode(resource)
-            const especialidadeCode = findEspecialidadeMedica(recordType, resource)
-            const encaminhamentoText = findEncaminhamento(recordType, resource)
-            const orientacao = findOrientacao(resource)
-            //const queixa = findQueixa(recordType, resource)
-            //const hda = findHda(recordType, resource)
-            //const diagnostico = findDiagnostico(recordType, resource)
-            //const hpp = findHpp(recordType, resource)
-            //const alergias = findAlergias(recordType, resource)
-            //const medicacoes_de_uso_comum = findMedicacoes_de_uso_comum(recordType, resource)
-            //const habitos = findHabitos(recordType, resource)
-            //const antecedentes_pessoais = findAntecedentes_pessoais(recordType, resource)
-            //const hfam = findHfam(recordType, resource)
-            //const sinais_vitais = findSinais_vitais(recordType, resource)
-            const conduta_medica = findConduta_medica(recordType, resource)
-            //const exame_fisico = findExameFisico(recordType, resource)
-            //const exame_imagem = findExameImagem(recordType, resource)
-            //const exame_lab = findExameLab(recordType, resource)
-            const prdParams = new GhasPrescrMedflowPParams()
-            
-            prdParams.nr_atendimento_p = attendanceData[0].resource.identifier[0].value
-  
-            prdParams.cd_medico_p = doctorData
-  
-            prdParams.nr_prescr_medflow = medflowBundle.result.id
-  
-            prdParams.ie_tipo_p = recordType
-            
-            if (index === resourcesToProcess.length - 1) {
-              prdParams.ie_liberado_p = 'S'
-            }
-  
-            prdParams.cd_procedimento_p = procedureCode 
-            prdParams.qt_procedimento_p = quantityProcedure
-            prdParams.ie_lado_p = side
-            prdParams.cd_intervalo_p = intervalCode
-            prdParams.ie_acm_p = 'N'
-            prdParams.ds_horarios_p = ''
-            prdParams.ie_se_necessario_p = isNecessary
-            prdParams.ie_anestesia_p = null
-            prdParams.ds_justificativa_proc_p = justification
-            prdParams.cd_material_p = materialCode
-            prdParams.ds_material_p = materialDescription
-            prdParams.ds_ind_material_p = materialInd
-            prdParams.ie_via_aplicacao_p = applicationVia
-            prdParams.qt_dose_p = quantityDose
-            prdParams.cd_unidade_medida_dose_p = unityCode
-            prdParams.cd_especialidade_p = null
-            prdParams.cd_especialidade_dest_p = especialidadeCode
-            prdParams.ds_encaminhamento_p = encaminhamentoText
-            prdParams.ds_orientacao_p = orientacao
-            //prdParams.queixa_p = queixa
-            //prdParams.hda_p = hda
-            //prdParams.diagnostico_p = diagnostico
-            //prdParams.hpp_p = hpp
-            //prdParams.alergias_p = alergias
-            //prdParams.medicacoes_de_uso_comum_p = medicacoes_de_uso_comum
-            //prdParams.habitos_p = habitos
-            //prdParams.antecedentes_pessoais_p = antecedentes_pessoais
-            //prdParams.hfam_p = hfam
-            //prdParams.sinais_vitais_p = sinais_vitais
-            prdParams.conduta_medica_p = conduta_medica
-            //prdParams.exame_fisico_p = exame_fisico
-            //prdParams.exame_imagem_p = exame_imagem
-            //prdParams.exame_lab_p = exame_lab
-  
-            await executeProcedure_GHAS_PRESCR_MEDFLOW_P(prdParams)
-  
-            console.log('(INF) Concluiu a execução Receituario!')
-            index++
+            const resourceP = resource?.resource?.category ?? null
+            let ie_tipo_param =''
+            if(resourceP){ie_tipo_param = resource?.resource?.category[0].text }
+                
+            if(ie_tipo_param == "Receituário" || resourceP == null)
+                  {
+                  const recordType = identifyRecordType(resource)
+                  const procedureCode = findProcedureCode(resource, recordType)
+                  const quantityProcedure = findQuantityProcedure(resource)
+                  const side = findSide(resource)
+                  const intervalCode = findIntervalCode(resource)
+                  const isNecessary = findIsNecessary(resource)
+                  const justification = findJustification(resource)
+                  const materialCode = findMaterialCode(resource)
+                  const materialDescription = findMaterialDescription(resource)
+                  const materialInd = findMaterialInd(resource)
+                  const applicationVia = findApplicationVia(resource)
+                  const quantityDose = findQuantityDose(resource)
+                  const unityCode = findMedidaUnityCode(resource)
+                  const especialidadeCode = findEspecialidadeMedica(recordType, resource)
+                  const encaminhamentoText = findEncaminhamento(recordType, resource)
+                  const orientacao = findOrientacao(resource)
+                  const conduta_medica = findConduta_medica(recordType, resource)
+                  
+                  const prdParams = new GhasPrescrMedflowPParams()
+                  
+                  prdParams.nr_atendimento_p = attendanceData[0].resource.identifier[0].value
+        
+                  prdParams.cd_medico_p = doctorData
+        
+                  prdParams.nr_prescr_medflow = medflowBundle.result.id
+        
+                  prdParams.ie_tipo_p = recordType
+                  
+                  if (index === resourcesToProcess.length - 1) {
+                    prdParams.ie_liberado_p = 'S'
+                  }
+        
+                  prdParams.cd_procedimento_p = procedureCode 
+                  prdParams.qt_procedimento_p = quantityProcedure
+                  prdParams.ie_lado_p = side
+                  prdParams.cd_intervalo_p = intervalCode
+                  prdParams.ie_acm_p = 'N'
+                  prdParams.ds_horarios_p = ''
+                  prdParams.ie_se_necessario_p = isNecessary
+                  prdParams.ie_anestesia_p = null
+                  prdParams.ds_justificativa_proc_p = justification
+                  prdParams.cd_material_p = materialCode
+                  prdParams.ds_material_p = materialDescription
+                  prdParams.ds_ind_material_p = materialInd
+                  prdParams.ie_via_aplicacao_p = applicationVia
+                  prdParams.qt_dose_p = quantityDose
+                  prdParams.cd_unidade_medida_dose_p = unityCode
+                  prdParams.cd_especialidade_p = null
+                  prdParams.cd_especialidade_dest_p = especialidadeCode
+                  prdParams.ds_encaminhamento_p = encaminhamentoText
+                  prdParams.ds_orientacao_p = orientacao
+                  prdParams.conduta_medica_p = conduta_medica
+              
+                  await executeProcedure_GHAS_PRESCR_MEDFLOW_P(prdParams)
+        
+                  console.log('(INF) Concluiu a execução Receituario!')
+                  index++}
 
           }
-        }
-          
-      }else{
-        console.log('Em Atendimento.')
       }
-      if(toGetStatus == 'PAUSADO'){
+      
+      
+      if(toGetStatus == 'PAUSADO' ){
+        let index = 0
         for (const resource of resourcesToProcess) {
           //const attendanceData = findAttendance(medflowBundle)
           //const doctorData = findDoctor(medflowBundle, resource)
-          const recordType = identifyRecordType(resource)
-          const procedureCode = findProcedureCode(resource, recordType)
-          const quantityProcedure = findQuantityProcedure(resource)
-          const side = findSide(resource)
-          const intervalCode = findIntervalCode(resource)
-          const isNecessary = findIsNecessary(resource)
-          const justification = findJustification(resource)
-          const materialCode = findMaterialCode(resource)
-          const materialDescription = findMaterialDescription(resource)
-          const materialInd = findMaterialInd(resource)
-          const applicationVia = findApplicationVia(resource)
-          const quantityDose = findQuantityDose(resource)
-          const unityCode = findMedidaUnityCode(resource)
-          const especialidadeCode = findEspecialidadeMedica(recordType, resource)
-          const encaminhamentoText = findEncaminhamento(recordType, resource)
-          const orientacao = findOrientacao(resource)
-          const queixa = findQueixa(recordType, resource)
-          const hda = findHda(recordType, resource)
-          const diagnostico = findDiagnostico(recordType, resource)
-          const hpp = findHpp(recordType, resource)
-          const alergias = findAlergias(recordType, resource)
-          const medicacoes_de_uso_comum = findMedicacoes_de_uso_comum(recordType, resource)
-          const habitos = findHabitos(recordType, resource)
-          const antecedentes_pessoais = findAntecedentes_pessoais(recordType, resource)
-          const hfam = findHfam(recordType, resource)
-          const sinais_vitais = findSinais_vitais(recordType, resource)
-          const conduta_medica = findConduta_medica(recordType, resource)
-          const exame_fisico = findExameFisico(recordType, resource)
-          const exame_imagem = findExameImagem(recordType, resource)
-          const exame_lab = findExameLab(recordType, resource)
-          const prdParams = new GhasPrescrMedflowPParams()
-          
+          const resourceP = resource?.resource?.category ?? null
+          let ie_tipo_param =''
+          if(resourceP){ie_tipo_param = resource?.resource?.category[0].text }
+              
+          if(ie_tipo_param == "CPOE"){
+                      const recordType = identifyRecordType(resource)
+                      const procedureCode = findProcedureCode(resource, recordType)
+                      const quantityProcedure = findQuantityProcedure(resource)
+                      const side = findSide(resource)
+                      const intervalCode = findIntervalCode(resource)
+                      const isNecessary = findIsNecessary(resource)
+                      const justification = findJustification(resource)
+                      const materialCode = findMaterialCode(resource)
+                      const materialDescription = findMaterialDescription(resource)
+                      const materialInd = findMaterialInd(resource)
+                      const applicationVia = findApplicationVia(resource)
+                      const quantityDose = findQuantityDose(resource)
+                      const unityCode = findMedidaUnityCode(resource)
+                      const especialidadeCode = findEspecialidadeMedica(recordType, resource)
+                      const encaminhamentoText = findEncaminhamento(recordType, resource)
+                      const orientacao = findOrientacao(resource)
+                      const queixa = findQueixa(recordType, resource)
+                      const hda = findHda(recordType, resource)
+                      const diagnostico = findDiagnostico(recordType, resource)
+                      const hpp = findHpp(recordType, resource)
+                      const alergias = findAlergias(recordType, resource)
+                      const medicacoes_de_uso_comum = findMedicacoes_de_uso_comum(recordType, resource)
+                      const habitos = findHabitos(recordType, resource)
+                      const antecedentes_pessoais = findAntecedentes_pessoais(recordType, resource)
+                      const hfam = findHfam(recordType, resource)
+                      const sinais_vitais = findSinais_vitais(recordType, resource)
+                      const conduta_medica = findConduta_medica(recordType, resource)
+                      const exame_fisico = findExameFisico(recordType, resource)
+                      const exame_imagem = findExameImagem(recordType, resource)
+                      const exame_lab = findExameLab(recordType, resource)
+                      const prdParams = new GhasPrescrMedflowPParams()
+                      
 
-          prdParams.nr_atendimento_p = attendanceData[0].resource.identifier[0].value
+                      prdParams.nr_atendimento_p = attendanceData[0].resource.identifier[0].value
 
-          prdParams.cd_medico_p = doctorData
+                      prdParams.cd_medico_p = doctorData
 
-          prdParams.nr_prescr_medflow = medflowBundle.result.id
+                      prdParams.nr_prescr_medflow = medflowBundle.result.id
 
-          
-          
-          prdParams.ie_tipo_p = 'CPOE'
-          
+                      
+                      
+                      prdParams.ie_tipo_p = 'CPOE'
+                      
 
 
-          if (index === resourcesToProcess.length - 1) {
-            prdParams.ie_liberado_p = 'S'
+                      if (index === resourcesToProcess.length - 1) {
+                        prdParams.ie_liberado_p = 'S'
+                      }
+
+                      prdParams.cd_procedimento_p = procedureCode 
+                      prdParams.qt_procedimento_p = quantityProcedure
+                      prdParams.ie_lado_p = side
+                      prdParams.cd_intervalo_p = intervalCode
+                      prdParams.ie_acm_p = 'N'
+                      prdParams.ds_horarios_p = ''
+                      prdParams.ie_se_necessario_p = isNecessary
+                      prdParams.ie_anestesia_p = null
+                      prdParams.ds_justificativa_proc_p = justification
+                      prdParams.cd_material_p = materialCode
+                      prdParams.ds_material_p = materialDescription
+                      prdParams.ds_ind_material_p = materialInd
+                      prdParams.ie_via_aplicacao_p = applicationVia
+                      prdParams.qt_dose_p = quantityDose
+                      prdParams.cd_unidade_medida_dose_p = unityCode
+                      prdParams.cd_especialidade_p = null
+                      prdParams.cd_especialidade_dest_p = especialidadeCode // 6
+                      prdParams.ds_encaminhamento_p = encaminhamentoText
+                      prdParams.ds_orientacao_p = orientacao
+                      prdParams.queixa_p = queixa
+                      prdParams.hda_p = hda
+                      prdParams.diagnostico_p = diagnostico
+                      prdParams.hpp_p = hpp
+                      prdParams.alergias_p = alergias
+                      prdParams.medicacoes_de_uso_comum_p = medicacoes_de_uso_comum
+                      prdParams.habitos_p = habitos
+                      prdParams.antecedentes_pessoais_p = antecedentes_pessoais
+                      prdParams.hfam_p = hfam
+                      prdParams.sinais_vitais_p = sinais_vitais
+                      prdParams.conduta_medica_p = conduta_medica
+                      prdParams.exame_fisico_p = exame_fisico
+                      prdParams.exame_imagem_p = exame_imagem
+                      prdParams.exame_lab_p = exame_lab
+
+                      //console.log(JSON.stringify(prdParams))
+
+                      await executeProcedure_GHAS_PRESCR_MEDFLOW_P(prdParams)
+
+                      
+                      console.log('(INF) Concluiu a execução!')
+                      index++
           }
 
-          prdParams.cd_procedimento_p = procedureCode 
-          prdParams.qt_procedimento_p = quantityProcedure
-          prdParams.ie_lado_p = side
-          prdParams.cd_intervalo_p = intervalCode
-          prdParams.ie_acm_p = 'N'
-          prdParams.ds_horarios_p = ''
-          prdParams.ie_se_necessario_p = isNecessary
-          prdParams.ie_anestesia_p = null
-          prdParams.ds_justificativa_proc_p = justification
-          prdParams.cd_material_p = materialCode
-          prdParams.ds_material_p = materialDescription
-          prdParams.ds_ind_material_p = materialInd
-          prdParams.ie_via_aplicacao_p = applicationVia
-          prdParams.qt_dose_p = quantityDose
-          prdParams.cd_unidade_medida_dose_p = unityCode
-          prdParams.cd_especialidade_p = null
-          prdParams.cd_especialidade_dest_p = especialidadeCode // 6
-          prdParams.ds_encaminhamento_p = encaminhamentoText
-          prdParams.ds_orientacao_p = orientacao
-          prdParams.queixa_p = queixa
-          prdParams.hda_p = hda
-          prdParams.diagnostico_p = diagnostico
-          prdParams.hpp_p = hpp
-          prdParams.alergias_p = alergias
-          prdParams.medicacoes_de_uso_comum_p = medicacoes_de_uso_comum
-          prdParams.habitos_p = habitos
-          prdParams.antecedentes_pessoais_p = antecedentes_pessoais
-          prdParams.hfam_p = hfam
-          prdParams.sinais_vitais_p = sinais_vitais
-          prdParams.conduta_medica_p = conduta_medica
-          prdParams.exame_fisico_p = exame_fisico
-          prdParams.exame_imagem_p = exame_imagem
-          prdParams.exame_lab_p = exame_lab
-
-          //console.log(JSON.stringify(prdParams))
-
-          await executeProcedure_GHAS_PRESCR_MEDFLOW_P(prdParams)
-
-          
-          console.log('(INF) Concluiu a execução!')
-          index++
-
-
         }
-        console.log('(INF) Concluiu a execução CPOE!')
-      }else{
-        console.log('Em Atendimento.')
+        
       }
+
 
       return reply.status(201).send()
     },

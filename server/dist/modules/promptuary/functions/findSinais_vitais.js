@@ -6,21 +6,34 @@ function findSinais_vitais(recordType, fullResource) {
     if (recordType === 'Q') {
         let arrParam = [];
         let valores = [];
-        //let arrParamNew :any = []
+        let arrParamNew = [];
         if (fullResource.resource.resourceType === "QuestionnaireResponse") {
             arrParam = fullResource.resource.item.filter((item) => item.linkId.substring(0, 'sinais_vitais'.length) === 'sinais_vitais');
+            arrParam.forEach((item) => {
+                let caracter = ":";
+                let valorResp;
+                arrParamNew = item?.answer?.length ?? null;
+                if (arrParamNew != null) {
+                    valores.push(`--> ${item.text} \n`);
+                    for (const items of item.answer) {
+                        if (Object.values(items).toString() == "true") {
+                            valorResp = "Sim";
+                        }
+                        else if (Object.values(items).toString() == "false") {
+                            valorResp = "Não";
+                        }
+                        else {
+                            valorResp = Object.values(items).toString();
+                        }
+                        valores.push(`- ${valorResp}\n`);
+                    }
+                }
+            });
+            return valores.toString().replaceAll(',-', '-');
         }
         else {
             return null;
         }
-        let caracter = ":";
-        arrParam.forEach(item => {
-            valores.push(`${item.text} ${caracter} ${Object.values(item.answer[0])}\n-`);
-        });
-        return valores.toString().replaceAll('-,', '').replaceAll('-', '');
-    }
-    else {
-        return null;
     }
 }
 function findSinais_vitais_triagem(fullResource) {
@@ -43,6 +56,6 @@ function findSinais_vitais_triagem(fullResource) {
     novoObjeto.temperatura = Object.values(newSinais.find((element) => element.linkId === 'sinais_vitais.temperatura').answer[0]).toString();
     novoObjeto.sato2 = Object.values(newSinais.find((element) => element.linkId === 'sinais_vitais.SATO2').answer[0]).toString();
     novoObjeto.fc = Object.values(newSinais.find((element) => element.linkId === 'sinais_vitais.FC').answer[0]).toString();
-    novoObjeto.descResumoTriagem = resumoTriagem[0].resource.action[0].description.toString();
+    novoObjeto.descResumoTriagem = resumoTriagem[0]?.resource.action[0]?.description?.toString() ?? null;
     return novoObjeto;
 }

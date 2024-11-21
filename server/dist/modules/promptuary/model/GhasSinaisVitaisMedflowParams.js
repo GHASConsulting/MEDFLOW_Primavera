@@ -19,6 +19,7 @@ class GhasSinaisVitaisMedflowParams {
         this.vl_circ_abdominal_p = null;
         this.nr_prontuario_p = null;
         this.ds_plandefinition_p = null;
+        this.ds_senha_p = null;
     }
 }
 exports.GhasSinaisVitaisMedflowParams = GhasSinaisVitaisMedflowParams;

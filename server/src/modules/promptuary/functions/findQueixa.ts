@@ -3,27 +3,36 @@ export function findQueixa (recordType : any, fullResource :any):any {
       let arrParam :any = []
       let valores :any = [] 
       let resultado :string
-      //let arrParamNew :any = []
+      let arrParamNew :any = []
 
           if(fullResource.resource.resourceType === "QuestionnaireResponse"){
           arrParam = fullResource.resource.item.filter((item :any) => item.linkId.substring(0,6) ===  'queixa')
-          
+                    arrParam.forEach((item:any) => {
+                      let caracter = ":";
+                      let valorResp
+                      arrParamNew = item?.answer?.length ?? null
+                        if(arrParamNew != null){
+                          valores.push(`--> ${item.text} \n`)
+                          for(const items of item.answer){
+                            if(Object.values(items).toString() == "true"){valorResp ="Sim"} 
+                                      else if(Object.values(items).toString() == "false") {valorResp ="Não"} 
+                                      else{valorResp = Object.values(items).toString()}
+                                    
+                            valores.push(`- ${valorResp}\n`);
+                          }
+                        }
+                      }
+                    );
+                
+                return valores.toString().replaceAll(',-','-')
 
-          }else{
+            }else{
               return null
-          }
-          let caracter= ":"
-          arrParam.forEach( item => { 
-            valores.push(`${item.text} ${caracter} ${Object.values(item.answer[0]) }\n-`)
-    }) 
-          
-          resultado = valores.toString().replaceAll('-,','').replaceAll('-','')
-          return resultado
-        }else{
-            return null
-        }
-        
-        
+            }
+            
+
+            
+          }   
 }
 
 
